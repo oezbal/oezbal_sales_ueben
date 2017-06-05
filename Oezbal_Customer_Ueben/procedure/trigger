@@ -1,0 +1,20 @@
+create or replace trigger trg_customer
+before insert or update
+on customer
+referencing new as newrow old as oldrow
+for each row
+declare
+begin
+
+  if (:newrow.credit < 0) then
+    raise_application_error(-20999, 'The credit' || :newrow.credit || 'is over the credit limit');
+  end if;
+  
+  if (updating) then
+  
+  if (abs(:newrow.credit - :oldrow.credit) > 1000) then
+    raise_application_error(-20999, 'Transaction over 1000 are not allowed');
+  end if;
+    end if;
+    
+end trg_customer;
